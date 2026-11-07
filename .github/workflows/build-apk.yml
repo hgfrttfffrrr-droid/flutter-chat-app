@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
 
     steps:
       - name: Checkout
@@ -28,15 +28,19 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Check Flutter
+        run: flutter doctor -v
+
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build split APKs
+        run: flutter build apk --release --split-per-abi
 
-      - name: Upload APK
+      - name: Upload APK files
         uses: actions/upload-artifact@v4
         with:
-          name: Messio-Chat-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: Flutter-Chat-APKs
+          path: build/app/outputs/flutter-apk/*.apk
           if-no-files-found: error
+          retention-days: 7
